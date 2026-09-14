@@ -1,104 +1,495 @@
-import React, { useEffect, useState } from "react";
-import { MotionConfig } from "framer-motion";
-import { Helmet, HelmetProvider } from "react-helmet-async";
+﻿import React, {
+  createContext,
+  lazy,
+  Suspense,
+  useContext,
+  useState,
+} from "react";
+import { MotionConfig, motion, useReducedMotion } from "framer-motion";
 import Navbar from "./components/Navbar.jsx";
-import HeroSection from "./sections/HeroSection.jsx";
-import EducationSection from "./sections/EducationSection.jsx";
-import HotTakesSection from "./sections/HotTakesSection.jsx";
-import SocialLinksSection from "./sections/SocialLinksSection.jsx";
-import SvgDivider from "./components/SvgDivider.jsx";
-import ParallaxLayers from "./components/ParallaxLayers.jsx";
+import { Arrow, Asterisk } from "./components/Icons.jsx";
+
+const Sculpture = lazy(() => import("./components/Sculpture.jsx"));
+const MotionContext = createContext(true);
+const EMAIL = "susan.pandit98@gmail.com";
+const CONTACT = `mailto:${EMAIL}`;
+const GITHUB = "https://github.com/susanpandit12";
+
+function Reveal({ children, className = "", delay = 0 }) {
+  const animated = useContext(MotionContext);
+  return (
+    <motion.div
+      className={className}
+      initial={animated ? { opacity: 0, y: 28 } : false}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{
+        duration: animated ? 0.7 : 0,
+        delay,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function ContactButton({ label = "Let’s talk" }) {
+  return (
+    <a className="contact-button" href={CONTACT}>
+      <span>{label}</span>
+      <Arrow />
+    </a>
+  );
+}
+
+function Hero({ animated }) {
+  return (
+    <section className="hero" id="home" aria-labelledby="hero-title">
+      <div className="hero-topline mono">
+        <span>SOFTWARE DEVELOPER & DIGITAL BUILDER</span>
+        <span>PORTFOLIO — 2026</span>
+      </div>
+      <Reveal>
+        <h1 id="hero-title" className="hero-heading">
+          HI, I’M SUSAN<span className="heading-period">.</span>
+        </h1>
+      </Reveal>
+      <div className="hero-stage">
+        <div className="hero-orbit" aria-hidden="true" />
+        <div className="sculpture">
+          <Suspense
+            fallback={
+              <div className="sculpture-fallback" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+            }
+          >
+            <Sculpture animated={animated} />
+          </Suspense>
+        </div>
+        <div className="specimen-label mono" aria-hidden="true">
+          <span className="crosshair">+</span> IDEAS IN ORBIT
+          <br />
+          <span>ALWAYS EVOLVING / 001</span>
+        </div>
+        <div className="hero-side-label mono" aria-hidden="true">
+          CURIOUS BY NATURE. BUILDER BY CHOICE.
+        </div>
+        <div className="hero-bottom">
+          <Reveal className="hero-intro" delay={0.15}>
+            <span className="eyebrow">
+              <i className="status-dot" /> OPEN TO CONVERSATIONS
+            </span>
+            <p>
+              I turn complex ideas into
+              <br />
+              <em>thoughtfully simple</em>
+              <br />
+              digital experiences.
+            </p>
+          </Reveal>
+          <a className="scroll-cue mono" href="#about">
+            <span>SCROLL TO EXPLORE</span>
+            <span className="scroll-arrow">↓</span>
+          </a>
+          <Reveal className="hero-cta" delay={0.25}>
+            <ContactButton label="Have an idea?" />
+            <span className="mono">FROM NEPAL. BUILDING BEYOND.</span>
+          </Reveal>
+        </div>
+      </div>
+      <div className="hero-footnote mono">
+        <span>JAVA / REACT / CREATIVE DEVELOPMENT</span>
+        <span>
+          GOOD CODE. A LITTLE PERSONALITY. <Asterisk />
+        </span>
+      </div>
+    </section>
+  );
+}
+
+const technologies = [
+  "REACT",
+  "JAVA",
+  "SPRING BOOT",
+  "ANGULAR",
+  "TAILWIND",
+  "CREATIVE CODE",
+];
+function Marquee() {
+  return (
+    <div
+      className="marquee"
+      role="img"
+      aria-label="Technologies: React, Java, Spring Boot, Angular, Tailwind, creative code"
+    >
+      <div className="marquee-track" aria-hidden="true">
+        {[0, 1].map((copy) => (
+          <div className="marquee-group" key={copy}>
+            {technologies.map((text) => (
+              <span key={text}>
+                {text}
+                <Asterisk />
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function About() {
+  return (
+    <section
+      className="about section-shell"
+      id="about"
+      aria-labelledby="about-title"
+    >
+      <Reveal className="section-kicker mono">
+        <span>01 / A LITTLE ABOUT ME</span>
+        <Asterisk />
+      </Reveal>
+      <div className="about-grid">
+        <Reveal className="portrait-wrap">
+          <div className="portrait-frame">
+            <img
+              src="/assets/profile.jpg"
+              alt="Susan Pandit"
+              width="807"
+              height="546"
+              loading="lazy"
+            />
+            <span className="portrait-index mono">SP / OFFLINE</span>
+          </div>
+          <div className="portrait-caption mono">
+            <span>NEPAL → ATLANTA, GA</span>
+            <span>नमस्ते</span>
+          </div>
+        </Reveal>
+        <div className="about-copy">
+          <Reveal>
+            <h2 id="about-title">
+              A curious mind.
+              <br />A <span className="serif-word">builder’s</span> instinct.
+            </h2>
+          </Reveal>
+          <Reveal>
+            <p className="about-lead">
+              I’m Susan Pandit, a software developer who cares as much about how
+              something feels as how it works.
+            </p>
+            <p>
+              My curiosity about computers grew into a love for building with
+              Java, Spring Boot, React, and Angular. Today, I’m connecting
+              reliable systems with thoughtful interfaces — and exploring what
+              AI makes possible.
+            </p>
+            <p>
+              Originally from Nepal and based in Atlanta, I bring curiosity and
+              a fresh perspective to what I build. Away from the screen?
+              Cricket, soccer, movies, and a good game.
+            </p>
+          </Reveal>
+          <Reveal className="about-signoff">
+            <span>Always learning. Always making.</span>
+            <span className="signature">Susan.</span>
+          </Reveal>
+        </div>
+      </div>
+      <Reveal className="education">
+        <div className="mono education-label">THE FOUNDATION</div>
+        <div>
+          <span className="mono">2021 / SAINT CLOUD STATE UNIVERSITY</span>
+          <h3>Information Systems</h3>
+          <p>Bachelor’s degree</p>
+        </div>
+        <div>
+          <span className="mono">2026 / TRINE UNIVERSITY</span>
+          <h3>Business Analytics</h3>
+          <p>Master’s program</p>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+const services = [
+  {
+    name: "Full-stack development",
+    description:
+      "From the first interaction to the logic behind it. Thoughtful interfaces connected to dependable applications.",
+    tools: "Java · Spring Boot · React · Angular",
+    detail:
+      "I bring frontend and backend thinking together: clear application structure, reusable components, and APIs that make the experience work as a whole.",
+  },
+  {
+    name: "Web experiences",
+    description:
+      "Clean layouts, expressive motion, and the small details that make a website feel good to use.",
+    tools: "Responsive design · Tailwind CSS · Framer Motion",
+    detail:
+      "I build interfaces that adapt to different screens, work with keyboards, and respect motion preferences. The goal is a website that feels considered on every device.",
+  },
+  {
+    name: "Practical digital tools",
+    description:
+      "Useful software that makes an everyday task simpler. Built around people and the way they actually work.",
+    tools: "Product thinking · Browser tools · User experience",
+    detail:
+      "I enjoy turning a repeated task into a useful tool: fewer steps, clearer feedback, and an interface that helps people get straight to what they need.",
+  },
+  {
+    name: "Data & exploration",
+    description:
+      "Connecting technology with business questions. Learning, experimenting, and turning curiosity into what comes next.",
+    tools: "Business analytics · Scalable systems · AI exploration",
+    detail:
+      "My Information Systems background and Business Analytics studies shape how I approach a problem: understand the need, explore the data, and build something useful.",
+  },
+];
+function Services() {
+  const [open, setOpen] = useState(null);
+  return (
+    <section
+      className="services section-shell"
+      id="expertise"
+      aria-labelledby="services-title"
+    >
+      <Reveal className="section-kicker mono">
+        <span>02 / WHAT I BRING TO THE TABLE</span>
+        <span>IDEA → EXPERIENCE</span>
+      </Reveal>
+      <Reveal className="services-heading">
+        <h2 id="services-title">
+          BUILT WITH
+          <br />
+          <span className="serif-word">intention.</span>
+        </h2>
+        <p>
+          A developer’s mindset.
+          <br />
+          An eye for the experience.
+          <br />
+          Care in every detail.
+        </p>
+      </Reveal>
+      <div className="services-list">
+        {services.map((service, index) => (
+          <Reveal key={service.name}>
+            <article
+              className={`service-row ${open === index ? "is-open" : ""}`}
+            >
+              <button
+                className="service-trigger"
+                onClick={() => setOpen(open === index ? null : index)}
+                aria-expanded={open === index}
+                aria-controls={`service-${index}`}
+              >
+                <span className="service-number">0{index + 1}</span>
+                <span className="service-summary">
+                  <span className="service-name">{service.name}</span>
+                  <span className="service-description">
+                    {service.description}
+                  </span>
+                </span>
+                <span className="service-toggle" aria-hidden="true">
+                  {open === index ? "−" : "+"}
+                </span>
+              </button>
+              <div
+                className="service-detail"
+                id={`service-${index}`}
+                hidden={open !== index}
+              >
+                <p>{service.detail}</p>
+                <span className="mono">{service.tools}</span>
+              </div>
+            </article>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Projects() {
+  return (
+    <section
+      className="projects section-shell"
+      id="projects"
+      aria-labelledby="projects-title"
+    >
+      <Reveal className="section-kicker mono">
+        <span>03 / CODE MEETS CHARACTER</span>
+        <span>SELECTED WORK — 2026</span>
+      </Reveal>
+      <Reveal className="projects-heading">
+        <h2 id="projects-title" className="metallic">
+          IDEAS INTO
+          <br />
+          <span className="serif-word">interfaces.</span>
+        </h2>
+        <span className="project-count mono">ALWAYS A WORK IN PROGRESS ↙</span>
+      </Reveal>
+      <Reveal>
+        <article className="project-card">
+          <div className="project-meta">
+            <span className="project-number">01</span>
+            <div>
+              <span className="mono">
+                PERSONAL PROJECT / CREATIVE DEVELOPMENT
+              </span>
+              <h3>
+                The personal space<span className="orange-dot">.</span>
+              </h3>
+            </div>
+            <a
+              className="outline-button"
+              href={`${GITHUB}/my-portflio12`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              View source <Arrow />
+            </a>
+          </div>
+          <div className="portfolio-preview" aria-hidden="true">
+            <div className="portfolio-preview-top mono">
+              <span>SUSAN PANDIT®</span>
+              <span>A SPACE TO EXPLORE.</span>
+              <Asterisk />
+            </div>
+            <div className="mini-heading">
+              CURIOUS.
+              <br />
+              <span>BY DESIGN.</span>
+            </div>
+            <div className="orbital-art">
+              <i />
+              <i />
+              <i />
+              <span />
+            </div>
+            <div className="portfolio-preview-bottom mono">
+              <span>CODE MEETS CHARACTER.</span>
+              <span>2026 EDITION ↗</span>
+            </div>
+          </div>
+          <div className="project-footer">
+            <p>A little code. A little motion. A lot of me.</p>
+            <div className="tags">
+              <span>React</span>
+              <span>Three.js</span>
+              <span>Motion</span>
+            </div>
+          </div>
+        </article>
+      </Reveal>
+      <Reveal>
+        <a
+          className="side-project"
+          href="https://itsathi.netlify.app/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span className="mono">ALSO BUILDING</span>
+          <span>
+            <strong>IT Sathi</strong>
+            <span>A digital toolbox for everyday Nepali life.</span>
+          </span>
+          <Arrow />
+        </a>
+      </Reveal>
+      <Reveal className="github-note">
+        <span>More experiments live over here.</span>
+        <a href={GITHUB} target="_blank" rel="noreferrer">
+          Explore my GitHub <Arrow />
+        </a>
+      </Reveal>
+    </section>
+  );
+}
+
+function Contact() {
+  return (
+    <footer className="contact section-shell" id="contact">
+      <Reveal className="section-kicker mono">
+        <span>04 / LET’S MAKE SOMETHING GOOD</span>
+        <span>
+          <i className="status-dot" /> START WITH A HELLO
+        </span>
+      </Reveal>
+      <Reveal>
+        <p className="contact-pretitle">
+          Have a project, a question, or a good idea?
+        </p>
+        <a className="contact-title" href={CONTACT}>
+          LET’S <span className="serif-word">talk.</span>
+          <Arrow />
+        </a>
+      </Reveal>
+      <Reveal className="contact-links">
+        <a className="email-link" href={CONTACT}>
+          {EMAIL}
+          <Arrow />
+        </a>
+        <div className="social-links">
+          {[
+            ["GitHub", GITHUB],
+            ["LinkedIn", "https://www.linkedin.com/in/susan-pandit/"],
+            ["Instagram", "https://www.instagram.com/_susan_23_/"],
+          ].map(([label, url]) => (
+            <a href={url} key={label} target="_blank" rel="noreferrer">
+              {label}
+              <Arrow />
+            </a>
+          ))}
+        </div>
+      </Reveal>
+      <div className="footer-bottom mono">
+        <a href="#home" className="footer-brand">
+          SP<span>®</span>
+        </a>
+        <span>© {new Date().getFullYear()} SUSAN PANDIT</span>
+        <span>BUILT WITH CURIOSITY. जय नेपाल.</span>
+        <a href="#home">BACK TO TOP ↑</a>
+      </div>
+    </footer>
+  );
+}
 
 export default function App() {
-  const prefersReduced = typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  const [scroll, setScroll] = useState(0);
-  useEffect(() => {
-    const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      setScroll(max > 0 ? (window.scrollY / max) * 100 : 0);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
+  const reducedMotion = useReducedMotion();
+  const [paused, setPaused] = useState(false);
+  const animated = !reducedMotion && !paused;
   return (
-    <HelmetProvider>
-      <MotionConfig reducedMotion={prefersReduced ? "always" : "never"}>
-        <Helmet>
-          <title>Susan — Portfolio</title>
-          <meta name="description" content="Super-modern portfolio with sleek animations and bold personality by Susan." />
-          <meta property="og:title" content="Susan — Portfolio" />
-          <meta property="og:description" content="Sleek, animated, unapologetically modern." />
-          <meta property="og:type" content="website" />
-          <meta property="og:image" content="/src/assets/profile.jpg" />
-          <script type="application/ld+json">{JSON.stringify({
-            "@context":"https://schema.org",
-            "@type":"Person",
-            name:"Susan",
-            knowsAbout:["Web Design","Animations","Framer Motion","Vanta.js"]
-          })}</script>
-        </Helmet>
-        <div className="min-h-screen relative transition-colors duration-300">
-          {/* Scroll progress bar */}
-          <div
-            className="fixed top-0 left-0 h-1 z-[9999] bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400 rounded-r-full"
-            style={{ width: `${scroll}%` }}
+    <MotionContext.Provider value={animated}>
+      <MotionConfig reducedMotion={animated ? "never" : "always"}>
+        <div
+          className="site-wrapper"
+          data-motion={animated ? "playing" : "paused"}
+        >
+          <a className="skip-link" href="#main">
+            Skip to content
+          </a>
+          <Navbar
+            animated={animated}
+            reducedMotion={reducedMotion}
+            onToggleMotion={() => setPaused((value) => !value)}
           />
-          <Navbar />
-          <ParallaxLayers />
-
-          <main>
-            <section id="hero" className="section">
-              <HeroSection />
-            </section>
-            <SvgDivider variant="wave" />
-            <section id="education" className="section">
-              <EducationSection />
-            </section>
-            <SvgDivider variant="zigzag" />
-            <section id="hot-takes" className="section">
-              <HotTakesSection />
-            </section>
-            <SvgDivider variant="wave" />
-            <section id="social" className="section">
-              <SocialLinksSection />
-            </section>
+          <main id="main">
+            <Hero animated={animated} />
+            <Marquee />
+            <About />
+            <Services />
+            <Projects />
           </main>
-
-          <footer className="py-14 px-4 text-center bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-violet-500/10 dark:from-[#232946]/60 dark:via-[#1e3c72]/60 dark:to-[#0f2027]/60 relative mt-16">
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-lg font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400 bg-clip-text text-transparent drop-shadow flex items-center gap-1">
-                Powered by curiosity, code, and caffeine.
-              </span>
-              <span className="text-sm text-gray-700 dark:text-white/60">
-                Built with <span className="font-semibold text-cyan-500">React</span>, <span className="font-semibold text-blue-500">Tailwind</span>, and <span className="font-semibold text-violet-500">JSP</span>.
-              </span>
-
-              {/* Contact Me button */}
-              <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLScDv8ffMaeuWPnIygWhu-113WblitiuaH79SFSpI1bQLVDWYA/viewform?usp=sharing&ouid=100539673984814755174"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Contact me via Google Form"
-                className="mt-3 inline-flex items-center gap-2 px-5 py-2 rounded-full text-white bg-gradient-to-r from-cyan-600 via-blue-600 to-violet-600 hover:from-cyan-500 hover:via-blue-500 hover:to-violet-500 transition-shadow shadow-lg hover:shadow-cyan-500/30"
-              >
-                Contact Me
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="opacity-90">
-                  <path d="M7 12h10M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </a>
-
-              <span className="text-xs text-gray-400 mt-2 flex items-center justify-center gap-1">
-                &copy; 2025 Susan Pandit. जय नेपाल <span className="text-lg">🇳🇵</span>
-              </span>
-            </div>
-            <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-32 h-2 bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400 rounded-full blur-lg opacity-60 pointer-events-none" />
-          </footer>
+          <Contact />
         </div>
       </MotionConfig>
-    </HelmetProvider>
+    </MotionContext.Provider>
   );
 }
