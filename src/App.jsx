@@ -1,15 +1,18 @@
-﻿import React, {
-  createContext,
-  lazy,
-  Suspense,
-  useContext,
-  useState,
-} from "react";
-import { MotionConfig, motion, useReducedMotion } from "framer-motion";
+﻿import React, { createContext, useContext, useRef, useState } from "react";
+import {
+  MotionConfig,
+  motion,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import Navbar from "./components/Navbar.jsx";
 import { Arrow, Asterisk } from "./components/Icons.jsx";
 
-const Sculpture = lazy(() => import("./components/Sculpture.jsx"));
+import HomepageHero from "./components/HomepageHero.jsx";
+import ScrollStory from "./components/ScrollStory.jsx";
+import Workbench from "./components/Workbench.jsx";
 const MotionContext = createContext(true);
 const EMAIL = "susan.pandit98@gmail.com";
 const CONTACT = `mailto:${EMAIL}`;
@@ -34,80 +37,19 @@ function Reveal({ children, className = "", delay = 0 }) {
   );
 }
 
-function ContactButton({ label = "Let’s talk" }) {
+function ScrollProgress({ animated }) {
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, {
+    stiffness: 110,
+    damping: 24,
+    restDelta: 0.001,
+  });
   return (
-    <a className="contact-button" href={CONTACT}>
-      <span>{label}</span>
-      <Arrow />
-    </a>
-  );
-}
-
-function Hero({ animated }) {
-  return (
-    <section className="hero" id="home" aria-labelledby="hero-title">
-      <div className="hero-topline mono">
-        <span>SOFTWARE DEVELOPER & DIGITAL BUILDER</span>
-        <span>PORTFOLIO — 2026</span>
-      </div>
-      <Reveal>
-        <h1 id="hero-title" className="hero-heading">
-          HI, I’M SUSAN<span className="heading-period">.</span>
-        </h1>
-      </Reveal>
-      <div className="hero-stage">
-        <div className="hero-orbit" aria-hidden="true" />
-        <div className="sculpture">
-          <Suspense
-            fallback={
-              <div className="sculpture-fallback" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-              </div>
-            }
-          >
-            <Sculpture animated={animated} />
-          </Suspense>
-        </div>
-        <div className="specimen-label mono" aria-hidden="true">
-          <span className="crosshair">+</span> IDEAS IN ORBIT
-          <br />
-          <span>ALWAYS EVOLVING / 001</span>
-        </div>
-        <div className="hero-side-label mono" aria-hidden="true">
-          CURIOUS BY NATURE. BUILDER BY CHOICE.
-        </div>
-        <div className="hero-bottom">
-          <Reveal className="hero-intro" delay={0.15}>
-            <span className="eyebrow">
-              <i className="status-dot" /> OPEN TO CONVERSATIONS
-            </span>
-            <p>
-              I turn complex ideas into
-              <br />
-              <em>thoughtfully simple</em>
-              <br />
-              digital experiences.
-            </p>
-          </Reveal>
-          <a className="scroll-cue mono" href="#about">
-            <span>SCROLL TO EXPLORE</span>
-            <span className="scroll-arrow">↓</span>
-          </a>
-          <Reveal className="hero-cta" delay={0.25}>
-            <ContactButton label="Have an idea?" />
-            <span className="mono">FROM NEPAL. BUILDING BEYOND.</span>
-          </Reveal>
-        </div>
-      </div>
-      <div className="hero-footnote mono">
-        <span>JAVA / REACT / CREATIVE DEVELOPMENT</span>
-        <span>
-          GOOD CODE. A LITTLE PERSONALITY. <Asterisk />
-        </span>
-      </div>
-    </section>
+    <motion.div
+      className="scroll-progress"
+      aria-hidden="true"
+      style={{ scaleX: animated ? progress : 0 }}
+    />
   );
 }
 
@@ -250,6 +192,22 @@ const services = [
     detail:
       "My Information Systems background and Business Analytics studies shape how I approach a problem: understand the need, explore the data, and build something useful.",
   },
+  {
+    name: "APIs & integrations",
+    description:
+      "Connect the moving parts. Clean APIs and integrations that help applications work together.",
+    tools: "REST APIs · Spring Boot · Third-party integrations",
+    detail:
+      "From defining endpoints to handling errors and validating input, I build connections that are understandable, maintainable, and useful to the people building on top of them.",
+  },
+  {
+    name: "Performance & accessibility",
+    description:
+      "Make the details count. Faster pages, clearer interactions, and experiences more people can use.",
+    tools: "Responsive layouts · Keyboard navigation · Motion preferences",
+    detail:
+      "I review loading behavior, screen-size adaptations, semantic markup, and keyboard interactions, then turn the findings into practical improvements to the experience.",
+  },
 ];
 function Services() {
   const [open, setOpen] = useState(null);
@@ -317,10 +275,19 @@ function Services() {
 }
 
 function Projects() {
+  const projectsRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: projectsRef,
+    offset: ["start end", "end start"],
+  });
+  const projectTilt = useTransform(scrollYProgress, [0, 0.5, 1], [6, 0, -5]);
+  const projectLift = useTransform(scrollYProgress, [0, 0.5, 1], [45, 0, -25]);
+  const animated = useContext(MotionContext);
   return (
     <section
       className="projects section-shell"
       id="projects"
+      ref={projectsRef}
       aria-labelledby="projects-title"
     >
       <Reveal className="section-kicker mono">
@@ -336,7 +303,12 @@ function Projects() {
         <span className="project-count mono">ALWAYS A WORK IN PROGRESS ↙</span>
       </Reveal>
       <Reveal>
-        <article className="project-card">
+        <motion.article
+          className="project-card"
+          style={
+            animated ? { rotateX: projectTilt, y: projectLift } : undefined
+          }
+        >
           <div className="project-meta">
             <span className="project-number">01</span>
             <div>
@@ -386,7 +358,7 @@ function Projects() {
               <span>Motion</span>
             </div>
           </div>
-        </article>
+        </motion.article>
       </Reveal>
       <Reveal>
         <a
@@ -417,7 +389,7 @@ function Contact() {
   return (
     <footer className="contact section-shell" id="contact">
       <Reveal className="section-kicker mono">
-        <span>04 / LET’S MAKE SOMETHING GOOD</span>
+        <span>05 / LET’S MAKE SOMETHING GOOD</span>
         <span>
           <i className="status-dot" /> START WITH A HELLO
         </span>
@@ -472,6 +444,7 @@ export default function App() {
           className="site-wrapper"
           data-motion={animated ? "playing" : "paused"}
         >
+          <ScrollProgress animated={animated} />
           <a className="skip-link" href="#main">
             Skip to content
           </a>
@@ -481,11 +454,13 @@ export default function App() {
             onToggleMotion={() => setPaused((value) => !value)}
           />
           <main id="main">
-            <Hero animated={animated} />
+            <HomepageHero animated={animated} />
             <Marquee />
+            <ScrollStory animated={animated} />
             <About />
             <Services />
             <Projects />
+            <Workbench />
           </main>
           <Contact />
         </div>

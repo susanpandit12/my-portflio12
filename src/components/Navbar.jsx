@@ -5,10 +5,27 @@ const links = [
   ["about", "About"],
   ["expertise", "Expertise"],
   ["projects", "Projects"],
+  ["tools", "Tools"],
 ];
 export default function Navbar({ animated, reducedMotion, onToggleMotion }) {
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("home");
   const toggle = useRef(null);
+  useEffect(() => {
+    const sections = document.querySelectorAll(
+      "#home, #about, #expertise, #projects, #tools, #contact",
+    );
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        }
+      },
+      { rootMargin: "-15% 0px -55% 0px" },
+    );
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     const onKeyDown = (event) => {
       if (event.key === "Escape" && open) {
@@ -27,7 +44,14 @@ export default function Navbar({ animated, reducedMotion, onToggleMotion }) {
         aria-label="Susan Pandit, home"
         onClick={() => setOpen(false)}
       >
-        SP<span>®</span>
+        <span className="brand-monogram">
+          SP<span>®</span>
+        </span>
+        <span className="brand-name">
+          SUSAN
+          <br />
+          PANDIT
+        </span>
       </a>
       <nav
         className={`nav-links ${open ? "is-open" : ""}`}
@@ -35,11 +59,20 @@ export default function Navbar({ animated, reducedMotion, onToggleMotion }) {
         aria-label="Main navigation"
       >
         {links.map(([id, label]) => (
-          <a key={id} href={`#${id}`} onClick={() => setOpen(false)}>
+          <a
+            key={id}
+            href={`#${id}`}
+            aria-current={active === id ? "location" : undefined}
+            onClick={() => setOpen(false)}
+          >
             {label}
           </a>
         ))}
-        <a href="#contact" onClick={() => setOpen(false)}>
+        <a
+          href="#contact"
+          aria-current={active === "contact" ? "location" : undefined}
+          onClick={() => setOpen(false)}
+        >
           Contact <Arrow />
         </a>
       </nav>

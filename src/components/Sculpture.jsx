@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 // Lazy-loaded, with no rendering offscreen, in background tabs, or while paused.
-export default function Sculpture({ animated }) {
+export default function Sculpture({ animated, scrollProgress }) {
   const host = useRef(null);
   const controller = useRef(null);
   const enabled = useRef(animated);
@@ -94,8 +94,9 @@ export default function Sculpture({ animated }) {
       lastTime = time;
       if (canAnimate()) {
         elapsed += delta;
-        knot.rotation.y = -0.6 + elapsed * 0.13;
-        knot.rotation.z = -0.4 + Math.sin(elapsed * 0.23) * 0.15;
+        const scroll = scrollProgress?.get() ?? 0;
+        knot.rotation.y = -0.6 + elapsed * 0.13 + scroll * Math.PI;
+        knot.rotation.z = -0.4 + Math.sin(elapsed * 0.23) * 0.15 + scroll * 0.5;
         sculpture.rotation.x +=
           (pointer.y * 0.18 - sculpture.rotation.x) * 0.045;
         sculpture.rotation.y +=
@@ -172,7 +173,7 @@ export default function Sculpture({ animated }) {
       renderer.domElement.remove();
       controller.current = null;
     };
-  }, []);
+  }, [scrollProgress]);
   return (
     <div className="sculpture-host" ref={host} aria-hidden="true">
       {failed && (
